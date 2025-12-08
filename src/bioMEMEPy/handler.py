@@ -1,5 +1,5 @@
 from itertools import islice
-import random
+from random import random
 
 # Load sequences from the FASTA file
 def extract(filepath):
@@ -8,6 +8,7 @@ def extract(filepath):
         for line in islice(f, 1, None, 2):
             seqs.append(line.rstrip('\n'))
     return seqs
+
 
 # Class PWM
 class PWM:
@@ -27,7 +28,7 @@ class PWM:
     def init(self):
         for nucl in self.matrix:
             for i in range(self.length):
-                self.matrix[nucl][i] = random.random()
+                self.matrix[nucl][i] = random()
         self.normalize()
 
     def update(self, seq):

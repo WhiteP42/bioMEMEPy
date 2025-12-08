@@ -1,3 +1,9 @@
+from . import handler
+
 #OOPS model
 
-#Initialize a PWM from given fasta files
+def oops(fasta, loops, alphabet):
+    seqs = handler.extract(fasta)
+    pwm = handler.PWM(alphabet, len(seqs))
+    # Initialization
+    pwm.init()
