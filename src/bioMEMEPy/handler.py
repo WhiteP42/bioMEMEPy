@@ -44,3 +44,9 @@ class PWM:
     def update(self, seq):
         for i in range(self.length):
             self.matrix[seq[i]][i] += 1
+
+
+# Class Sequence (provisional, may not be needed)
+class Sequence:
+    def __init__(self):
+        raise NotImplementedError
