@@ -1,9 +1,19 @@
 from . import handler
 
-#OOPS model
+# OOPS model
+def oops(fasta, alphabet, motif_l, loops):
+    # Errors
+    if not isinstance(motif_l, int):
+        raise TypeError('Length of the motif must be int.')
+    if not isinstance(loops, (int or bool)):
+        raise TypeError('Amount of loops must be either int or None.')
 
-def oops(fasta, loops, alphabet):
     seqs = handler.extract(fasta)
-    pwm = handler.PWM(alphabet, len(seqs))
+    pwm = handler.PWM(alphabet, motif_l)
     # Initialization
     pwm.init()
+    finish = False
+    loop_count = 0
+    while loop_count != loops or not finish:
+        loop_count += 1
+        raise NotImplementedError

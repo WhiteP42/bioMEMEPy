@@ -9,6 +9,16 @@ def extract(filepath):
             seqs.append(line.rstrip('\n'))
     return seqs
 
+# Extract motif from sequence
+def snip(seq, length, s_pos):
+    if s_pos > len(seq) - s_pos:
+        raise ValueError('Snippet overflows the provided sequence.')
+
+    f_pos = s_pos + length
+    snippet = []
+    for pos in range(s_pos, f_pos):
+        snippet.append(seq[pos])
+    return snippet
 
 # Class PWM
 class PWM:
