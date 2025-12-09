@@ -2,8 +2,6 @@
 
 >**WARNING: THIS PACKAGE IS STILL IN DEVELOPMENT AND IS NOT READY FOR USE**
 
-Multiple EM for motif discovery (MEME-like) – OOPS model only.
-
 `bioMEMEPy` is a Python package for motif discovery using the model **OOPS** (One Occurrence Per Sequence).
 
 ## Caracteristics
