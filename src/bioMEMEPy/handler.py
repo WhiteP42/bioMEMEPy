@@ -20,8 +20,8 @@ def snip(seq, length, s_pos):
         snippet.append(seq[pos])
     return snippet
 
-# Class PWM
-class PWM:
+# Class PSSM
+class PSSM:
     def __init__(self, alphabet, length):
         self.alphabet = alphabet
         self.length = length
