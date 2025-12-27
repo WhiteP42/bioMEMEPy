@@ -1,4 +1,4 @@
 # bioMEMEPy API
 
-from .oops import oops
+from .pipeline import meme
 from . import monomers

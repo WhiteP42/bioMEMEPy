@@ -18,7 +18,7 @@ def snip(seq, length, s_pos):
     snippet = []
     for pos in range(s_pos, f_pos):
         snippet.append(seq[pos])
-    return snippet
+    return ''.join(snippet)
 
 # Class PSSM
 class PSSM:

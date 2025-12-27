@@ -1,5 +1,5 @@
-from bioMEMEPy.handler import PSSM
-from bioMEMEPy.handler import snip
+from bioMEMEPy.tools import PSSM
+from bioMEMEPy.tools import snip
 from bioMEMEPy import monomers as mnm
 
 def test_pssm():
