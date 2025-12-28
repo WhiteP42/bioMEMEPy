@@ -1,8 +1,21 @@
-def meme(fasta, alphabet, motif_l, loops, model):
+import logging
+from Bio import SeqIO
+from .oops import oops
+
+def meme(fasta, alphabet, motif_l, model):
     # Errors
     if not isinstance(motif_l, int):
         raise TypeError('Length of the motif must be int.')
-    if not isinstance(loops, int):
-        raise TypeError('Amount of loops must be either int or None.')
     if model not in ['oops', 'zoops', 'anr']:
         raise ModuleNotFoundError('Mode not supported.')
+
+    #Read FASTA
+    with open(fasta, 'r') as f:
+        seqs = list(SeqIO.parse(f, 'fasta'))
+
+    #Call mode
+    _models = {'oops': oops} # Future models to be implemented here.
+    try:
+        result = _models[model](seqs, alphabet, motif_l)
+    except KeyError:
+        raise ValueError(f'Model {model} unsupported.')
