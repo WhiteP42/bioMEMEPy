@@ -8,7 +8,7 @@ version = '0.0.1'
 description = "Multiple EM for motif discovery. - OOPS model only"
 readme = 'README.md'
 requires-python = '>=3.13'
-dependencies = ['biopython']
+dependencies = []
 
 [tool.setuptools.packages.find]
 where = ['src']

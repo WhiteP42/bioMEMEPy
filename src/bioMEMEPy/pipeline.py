@@ -1,6 +1,6 @@
 import logging
-from Bio import SeqIO
 from .oops import oops
+from .tools import extract
 
 def meme(fasta, alphabet, motif_l, model):
     # Errors
@@ -9,7 +9,7 @@ def meme(fasta, alphabet, motif_l, model):
 
     #Read FASTA
     with open(fasta, 'r') as f:
-        seqs = list(SeqIO.parse(f, 'fasta'))
+        seqs = extract(fasta)
 
     #Call mode
     _models = {'oops': oops} # Future models to be implemented here.
