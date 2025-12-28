@@ -6,8 +6,6 @@ def meme(fasta, alphabet, motif_l, model):
     # Errors
     if not isinstance(motif_l, int):
         raise TypeError('Length of the motif must be int.')
-    if model not in ['oops', 'zoops', 'anr']:
-        raise ModuleNotFoundError('Mode not supported.')
 
     #Read FASTA
     with open(fasta, 'r') as f:
