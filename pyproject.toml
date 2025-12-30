@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'bioMEMEPy'
-version = '0.0.1'
+version = '0.0.3'
 description = "Multiple EM for motif discovery. - OOPS model only"
 readme = 'README.md'
 requires-python = '>=3.13'

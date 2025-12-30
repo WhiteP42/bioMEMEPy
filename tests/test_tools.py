@@ -1,6 +1,6 @@
 from bioMEMEPy.tools import PSSM
 from bioMEMEPy.tools import snip
-from bioMEMEPy import monomers as mnm
+from bioMEMEPy import mnm
 
 def test_pssm():
     pssm = PSSM(mnm.dna, 4)
@@ -19,4 +19,4 @@ def test_pssm():
 def test_snip():
     seq = 'ATACGTTAT'
     snippet = snip(seq, 4, 4)
-    assert snippet == 'GTTA' # Wrong format!!
+    assert snippet == 'GTTA'
