@@ -41,6 +41,5 @@ class PSSM:
                 self.matrix[nucl][i] = random()
         self.normalize()
 
-    def update(self, seq):
-        for i in range(self.length):
-            self.matrix[seq[i]][i] += 1
+    def print(self):
+        print(self.matrix)

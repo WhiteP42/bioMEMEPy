@@ -10,6 +10,7 @@ def test_pssm():
                           'G': [0, 0, 0, 0]}
     assert pssm.matrix == expected_empty_pssm
     pssm.init()
+    pssm.print()
     for i in range(pssm.length):
         total = 0
         for nucl in mnm.dna:
