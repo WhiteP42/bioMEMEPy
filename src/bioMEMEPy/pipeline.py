@@ -17,7 +17,7 @@ def meme(fasta, alphabet, motif_l, model):
         seqs = extract(f)
 
     #Call mode
-    _models = {'oops': oops} # Future models to be implemented here.
+    _models = {'oops': oops} # ZOOPS and ANR models to be added here.
     try:
         result = _models[model](seqs, alphabet, motif_l)
     except KeyError:

@@ -63,6 +63,3 @@ def gather(seqs, m_length, amount=0):
     else:
         raise ValueError('Amount must be 0 or higher.')
     return ret_seqs
-
-def seed(seqs: set, m_length, top_val=0.5):
-    raise NotImplementedError
