@@ -1,6 +1,30 @@
 from itertools import islice
 from random import random
 
+# Class PWM
+class PWM:
+    def __init__(self, seq: str, alphabet, length, top_val):
+        self.alphabet = alphabet
+        self.length = length
+        self.matrix = {nucl: [float(0)] * length for nucl in alphabet}
+        for i in range(self.length):
+            for nucl in self.alphabet:
+                if nucl == seq[i]:
+                    self.matrix[nucl][i] = top_val
+                else:
+                    self.matrix[nucl][i] = (1 - top_val) / len(self.alphabet - 1)
+
+    def normalize(self):
+        for i in range(self.length):
+            total = 0
+            for nucl in self.alphabet:
+                total += self.matrix[nucl][i]
+            for nucl in self.alphabet:
+                self.matrix[nucl][i] /= total
+
+    def print(self):
+        print(self.matrix)
+
 # Load sequences from the FASTA file
 def extract(filepath):
     seqs = []
@@ -20,26 +44,6 @@ def snip(seq, length, s_pos):
         snippet.append(seq[pos])
     return ''.join(snippet)
 
-# Class PSSM
-class PSSM:
-    def __init__(self, alphabet, length):
-        self.alphabet = alphabet
-        self.length = length
-        self.matrix = {nucl: [float(0)] * length for nucl in alphabet}
-
-    def normalize(self):
-        for i in range(self.length):
-            total = 0
-            for nucl in self.alphabet:
-                total += self.matrix[nucl][i]
-            for nucl in self.alphabet:
-                self.matrix[nucl][i] /= total
-
-    def init(self):
-        for nucl in self.matrix:
-            for i in range(self.length):
-                self.matrix[nucl][i] = random()
-        self.normalize()
-
-    def print(self):
-        print(self.matrix)
+# Find the best seed
+def seed(seqs, top_val=0.5):
+    raise NotImplementedError
