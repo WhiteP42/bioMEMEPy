@@ -1,5 +1,5 @@
 from itertools import islice
-from random import random
+import random
 
 # Class PWM
 class PWM:
@@ -44,6 +44,25 @@ def snip(seq, length, s_pos):
         snippet.append(seq[pos])
     return ''.join(snippet)
 
-# Find the best seed
-def seed(seqs, top_val=0.5):
+# Seeding functions
+def gather(seqs, m_length, amount=0):
+    ret_seqs = []
+
+    if amount == 0:
+        for seq in seqs:
+            for pos in range(len(seq) - m_length):
+                ret_seqs.append(snip(seq, m_length, pos))
+
+    elif amount > 0:
+        for n_gather in range(amount):
+            seq = None
+            while seq not in ret_seqs:
+                seq = seqs[random.randint(0, len(seqs) - 1)]
+            ret_seqs.append(snip(seq, m_length, random.randint(0, len(seq) - m_length)))
+
+    else:
+        raise ValueError('Amount must be 0 or higher.')
+    return ret_seqs
+
+def seed(seqs: set, m_length, top_val=0.5):
     raise NotImplementedError
