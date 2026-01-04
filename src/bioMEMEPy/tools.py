@@ -37,9 +37,10 @@ class RPM:
         self.hash_map = dict()
 
     def add_seq(self, seq):
-        key = hashlib.sha256(seq.encode()).hexdigest()[:16]
-        self.matrix[key] = [float(0)] * (len(seq) - self.m_length + 1)
-        self.hash_map[key] = seq
+        hash_key = hashlib.sha256(seq.encode()).hexdigest()[:16]
+        self.matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
+        self.hash_map[hash_key] = seq
+        return hash_key
 
 
 # Load sequences from the FASTA file
@@ -53,7 +54,7 @@ def extract(filepath):
 
 # Extract motif from sequence
 def snip(seq, length, s_pos):
-    if s_pos > len(seq) - s_pos:
+    if s_pos > len(seq) - s_pos + 1:
         raise ValueError('Snippet overflows the provided sequence.')
 
     f_pos = s_pos + length
@@ -82,3 +83,7 @@ def gather(seqs, m_length, amount=0):
     else:
         raise ValueError('Amount must be 0 or higher.')
     return ret_seqs
+
+# Get a hash
+def get_hash(seq):
+    return hashlib.sha256(seq.encode()).hexdigest()[:16]

@@ -4,7 +4,9 @@ from . import tools
 
 def e_step(pwm: tools.PWM, rpm: tools.RPM, seqs):
     for seq in seqs:
-        rpm.add_seq(seq)
+        hash_key = rpm.add_seq(seq)
+        for i in range(len(seq) - pwm.length + 1):
+            snippet = tools.snip(seq, pwm.length, i)
 
 
 def m_step():
@@ -13,7 +15,7 @@ def m_step():
 
 def oops(seqs, alphabet, m_length, top_val=0.5, extract_val=2000):
     # Get all k-mers to seed.
-    if len(seqs) * (len(seqs[0] - m_length)) >= 10000:
+    if len(seqs) * (len(seqs[0] - m_length + 1)) >= 10000:
         seed_seqs = tools.gather(seqs, m_length, extract_val)
     else:
         seed_seqs = tools.gather(seqs, m_length)
