@@ -38,7 +38,7 @@ class RPM:
 
     def add_seq(self, seq):
         key = hashlib.sha256(seq.encode()).hexdigest()[:16]
-        self.matrix[key] = [float(0)] * (seq - self.m_length + 1)
+        self.matrix[key] = [float(0)] * (len(seq) - self.m_length + 1)
         self.hash_map[key] = seq
 
 
