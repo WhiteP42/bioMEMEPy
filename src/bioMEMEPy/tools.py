@@ -1,12 +1,14 @@
 from itertools import islice
+import hashlib
 import random
+
 
 # Class PWM
 class PWM:
-    def __init__(self, seq: str, alphabet, length, top_val):
+    def __init__(self, seq: str, alphabet, m_length, top_val):
         self.alphabet = alphabet
-        self.length = length
-        self.matrix = {nucl: [float(0)] * length for nucl in alphabet}
+        self.length = m_length
+        self.matrix = {nucl: [float(0)] * self.length for nucl in alphabet}
         for i in range(self.length):
             for nucl in self.alphabet:
                 if nucl == seq[i]:
@@ -25,6 +27,21 @@ class PWM:
     def print(self):
         print(self.matrix)
 
+
+# Class RPM
+class RPM:
+    def __init__(self, alphabet, m_length):
+        self.alphabet = alphabet
+        self.m_length = m_length
+        self.matrix = dict()
+        self.hash_map = dict()
+
+    def add_seq(self, seq):
+        key = hashlib.sha256(seq.encode()).hexdigest()[:16]
+        self.matrix[key] = [float(0)] * (seq - self.m_length + 1)
+        self.hash_map[key] = seq
+
+
 # Load sequences from the FASTA file
 def extract(filepath):
     seqs = []
@@ -32,6 +49,7 @@ def extract(filepath):
         for line in islice(f, 1, None, 2):
             seqs.append(line.rstrip('\n'))
     return seqs
+
 
 # Extract motif from sequence
 def snip(seq, length, s_pos):
@@ -43,6 +61,7 @@ def snip(seq, length, s_pos):
     for pos in range(s_pos, f_pos):
         snippet.append(seq[pos])
     return ''.join(snippet)
+
 
 # Seeding functions
 def gather(seqs, m_length, amount=0):
