@@ -1,12 +1,20 @@
 import logging
+import math
 from . import tools
 
 
-def e_step(pwm: tools.PWM, rpm: tools.RPM, seqs):
+def e_step(pwm: tools.PWM, rpm: tools.RPM, p0, seqs):
     for seq in seqs:
         hash_key = rpm.add_seq(seq)
-        for i in range(len(seq) - pwm.length + 1):
-            snippet = tools.snip(seq, pwm.length, i)
+        for offset in range(len(seq) - pwm.length + 1):
+            z = 0
+            snippet = tools.snip(seq, pwm.length, offset)
+            for j in range(len(snippet)):
+                nucl = snippet[j]
+                log_nucl = math.log(pwm.matrix[nucl][offset]) - math.log(p0[nucl])
+                z += log_nucl
+            rpm.update_z(hash_key, z, offset)
+        rpm.normalize_seq(hash_key)
 
 
 def m_step():
@@ -22,6 +30,7 @@ def oops(seqs, alphabet, m_length, top_val=0.5, extract_val=2000):
 
     # Begin seeding.
     for seq in seed_seqs:
+        p0 = tools.p0_gen(seed_seqs, alphabet)
         current_pwm = tools.PWM(seq, alphabet, m_length, top_val)
         current_rpm = tools.RPM(alphabet, m_length)
-        e_step(current_pwm, current_rpm, seqs)
+        e_step(current_pwm, current_rpm, p0, seqs)

@@ -42,6 +42,30 @@ class RPM:
         self.hash_map[hash_key] = seq
         return hash_key
 
+    def update_z(self, hash_key, z, offset):
+        self.matrix[hash_key][offset] = z
+
+    def normalize_seq(self, hash_key):
+        total = 0
+        for z in self.matrix[hash_key]:
+            total += z
+        for z in self.matrix[hash_key]:
+            z /= total
+
+
+def p0_gen(seqs, alphabet):
+    prop = dict()
+    total = 0
+    for nucl in alphabet:
+        prop[nucl] = 0
+    for seq in seqs:
+        for nucl in seq:
+            prop[nucl] += 1
+            total += 1
+    for nucl in prop:
+        prop[nucl] /= total
+    return prop
+
 
 # Load sequences from the FASTA file
 def extract(filepath):
