@@ -11,7 +11,7 @@ def e_step(pwm: tools.PWM, rpm: tools.RPM, p0, seqs):
             snippet = tools.snip(seq, pwm.length, offset)
             for j in range(len(snippet)):
                 nucl = snippet[j]
-                log_nucl = math.log(pwm.matrix[nucl][offset]) - math.log(p0[nucl])
+                log_nucl = math.log(pwm.matrix[nucl][j]) - math.log(p0[nucl])
                 z += log_nucl
             rpm.update_z(hash_key, z, offset)
         rpm.normalize_seq(hash_key)
