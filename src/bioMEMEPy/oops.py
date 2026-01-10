@@ -7,13 +7,12 @@ def e_step(pwm: tools.PWM, rpm: tools.RPM, p0, seqs):
     for seq in seqs:
         hash_key = rpm.add_seq(seq)
         for offset in range(len(seq) - pwm.length + 1):
-            z = 0
             snippet = tools.snip(seq, pwm.length, offset)
             for j in range(len(snippet)):
                 nucl = snippet[j]
                 log_nucl = math.log(pwm.matrix[nucl][j]) - math.log(p0[nucl])
-                z += log_nucl
-            rpm.update_z(hash_key, z, offset)
+            rpm.update_z(hash_key, log_nucl, offset)
+        rpm.softmax(hash_key)
         rpm.normalize_seq(hash_key)
 
 

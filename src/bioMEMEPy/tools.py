@@ -1,3 +1,4 @@
+import math
 from itertools import islice
 import hashlib
 import random
@@ -44,6 +45,11 @@ class RPM:
 
     def update_z(self, hash_key, z, offset):
         self.matrix[hash_key][offset] = z
+
+    def softmax(self, hash_key):
+        max_log = max(self.matrix[hash_key])
+        for log in self.matrix[hash_key]:
+            log = math.exp(log - max_log)
 
     def normalize_seq(self, hash_key):
         total = 0
