@@ -25,6 +25,9 @@ class BasePWM:
             for nucl in self.alphabet:
                 self.matrix[nucl][i] /= total
 
+    def get_val(self, nucl, pos):
+        return self.matrix[nucl][pos]
+
     def print(self):
         print(self.matrix)
 
@@ -43,7 +46,7 @@ class BaseRPM:
         self.hash_map[hash_key] = seq
         return hash_key
 
-    def update_val(self, hash_key, val, offset):
+    def update(self, hash_key, val, offset):
         self.matrix[hash_key][offset] = val
 
 

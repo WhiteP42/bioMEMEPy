@@ -3,10 +3,12 @@ import time
 from .oops import oops
 from .tools import extract
 
+# Logger call:
+logger = logging.getLogger(__name__)
 
-def meme(fasta, alphabet, motif_l, model):
-    # Start time and logger config
-    logger = logging.getLogger(__name__)
+
+def meme(fasta, alphabet, motif_l, model, n_motif=1):
+    # Start time
     start_time = time.perf_counter()
 
     # Errors

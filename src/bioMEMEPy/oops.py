@@ -1,34 +1,35 @@
 import logging
+from email.encoders import encode_noop
+
+from .pipeline import logger
 import math
 from . import tools
-from. tools import BasePWM as PWM
+from .tools import BasePWM as PWM
 
 
 class RPM(tools.BaseRPM):
     def softmax(self, hash_key):
         max_log = max(self.matrix[hash_key])
-        for log in self.matrix[hash_key]:
-            log = math.exp(log - max_log)
-
-    def normalize_seq(self, hash_key):
-        total = 0
-        for z in self.matrix[hash_key]:
-            total += z
-        for z in self.matrix[hash_key]:
-            z /= total
+        for index, log in enumerate(self.matrix[hash_key]):
+            self.matrix[hash_key][index] = math.exp(log - max_log)
+        total = sum(self.matrix[hash_key])
+        for index, log in enumerate(self.matrix[hash_key]):
+            self.matrix[hash_key][index] /= total
 
 
 def e_step(pwm: PWM, rpm: RPM, p0, seqs):
     for seq in seqs:
+        # Add a sequence and generate a hash for it on RPM.
         hash_key = rpm.add_seq(seq)
+        # For a particular sequence, for every possible motif-length snip:
         for offset in range(len(seq) - pwm.length + 1):
-            snippet = tools.snip(seq, pwm.length, offset)
-            for j in range(len(snippet)):
-                nucl = snippet[j]
-                log_nucl = math.log(pwm.matrix[nucl][j]) - math.log(p0[nucl])
-            rpm.update_val(hash_key, log_nucl, offset)
+            snippet = tools.snip(seq, pwm.length, offset) #TODO: Change call method.
+            log = 0
+            # For every position on the snip, calculate and accumulate log probability against background frequency.
+            for index, nucl in enumerate(snippet):
+                log += math.log(pwm.get_val(nucl, index)) - math.log(p0[nucl])
+            rpm.update(hash_key, log, offset)
         rpm.softmax(hash_key)
-        rpm.normalize_seq(hash_key)
 
 
 def m_step():
@@ -45,6 +46,6 @@ def oops(seqs, alphabet, m_length, top_val=0.5, extract_val=2000):
     # Begin seeding.
     for seq in seed_seqs:
         p0 = tools.p0_gen(seed_seqs, alphabet)
-        current_pwm = tools.PWM(seq, alphabet, m_length, top_val)
-        current_rpm = tools.RPM(alphabet, m_length)
+        current_pwm = PWM(seq, alphabet, m_length, top_val)
+        current_rpm = RPM(alphabet, m_length)
         e_step(current_pwm, current_rpm, p0, seqs)
