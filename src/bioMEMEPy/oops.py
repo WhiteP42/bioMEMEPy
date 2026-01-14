@@ -1,6 +1,4 @@
 import logging
-from email.encoders import encode_noop
-
 from .pipeline import logger
 import math
 from . import tools
@@ -32,7 +30,7 @@ def e_step(pwm: PWM, rpm: RPM, p0, seqs):
         rpm.softmax(hash_key)
 
 
-def m_step():
+def m_step(pwm: PWM, rpm: RPM, seqs):
     raise NotImplementedError
 
 

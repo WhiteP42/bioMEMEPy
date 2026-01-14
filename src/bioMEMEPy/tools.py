@@ -4,52 +4,6 @@ import hashlib
 import random
 
 
-# Class PWM
-class BasePWM:
-    def __init__(self, seq: str, alphabet, m_length, top_val):
-        self.alphabet = alphabet
-        self.length = m_length
-        self.matrix = {nucl: [float(0)] * self.length for nucl in alphabet}
-        for i in range(self.length):
-            for nucl in self.alphabet:
-                if nucl == seq[i]:
-                    self.matrix[nucl][i] = top_val
-                else:
-                    self.matrix[nucl][i] = (1 - top_val) / len(self.alphabet - 1)
-
-    def normalize(self):
-        for i in range(self.length):
-            total = 0
-            for nucl in self.alphabet:
-                total += self.matrix[nucl][i]
-            for nucl in self.alphabet:
-                self.matrix[nucl][i] /= total
-
-    def get_val(self, nucl, pos):
-        return self.matrix[nucl][pos]
-
-    def print(self):
-        print(self.matrix)
-
-
-# Class RPM
-class BaseRPM:
-    def __init__(self, alphabet, m_length):
-        self.alphabet = alphabet
-        self.m_length = m_length
-        self.matrix = dict()
-        self.hash_map = dict()
-
-    def add_seq(self, seq):
-        hash_key = hashlib.sha256(seq.encode()).hexdigest()[:16]
-        self.matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
-        self.hash_map[hash_key] = seq
-        return hash_key
-
-    def update(self, hash_key, val, offset):
-        self.matrix[hash_key][offset] = val
-
-
 def p0_gen(seqs, alphabet):
     prop = dict()
     total = 0
@@ -108,3 +62,49 @@ def gather(seqs, m_length, amount=0):
 # Get a hash
 def get_hash(seq):
     return hashlib.sha256(seq.encode()).hexdigest()[:16]
+
+
+# Class PWM
+class BasePWM:
+    def __init__(self, seq: str, alphabet, m_length, top_val):
+        self.alphabet = alphabet
+        self.length = m_length
+        self.matrix = {nucl: [float(0)] * self.length for nucl in alphabet}
+        for i in range(self.length):
+            for nucl in self.alphabet:
+                if nucl == seq[i]:
+                    self.matrix[nucl][i] = top_val
+                else:
+                    self.matrix[nucl][i] = (1 - top_val) / len(self.alphabet - 1)
+
+    def normalize(self):
+        for i in range(self.length):
+            total = 0
+            for nucl in self.alphabet:
+                total += self.matrix[nucl][i]
+            for nucl in self.alphabet:
+                self.matrix[nucl][i] /= total
+
+    def get_val(self, nucl, pos):
+        return self.matrix[nucl][pos]
+
+    def print(self):
+        print(self.matrix)
+
+
+# Class RPM
+class BaseRPM:
+    def __init__(self, alphabet, m_length):
+        self.alphabet = alphabet
+        self.m_length = m_length
+        self.matrix = dict()
+        self.hash_map = dict()
+
+    def add_seq(self, seq):
+        hash_key = get_hash(seq)
+        self.matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
+        self.hash_map[hash_key] = seq
+        return hash_key
+
+    def update(self, hash_key, val, offset):
+        self.matrix[hash_key][offset] = val
