@@ -5,7 +5,7 @@ import random
 
 
 # Class PWM
-class PWM:
+class BasePWM:
     def __init__(self, seq: str, alphabet, m_length, top_val):
         self.alphabet = alphabet
         self.length = m_length
@@ -30,7 +30,7 @@ class PWM:
 
 
 # Class RPM
-class RPM:
+class BaseRPM:
     def __init__(self, alphabet, m_length):
         self.alphabet = alphabet
         self.m_length = m_length
@@ -43,20 +43,8 @@ class RPM:
         self.hash_map[hash_key] = seq
         return hash_key
 
-    def update_z(self, hash_key, z, offset):
-        self.matrix[hash_key][offset] = z
-
-    def softmax(self, hash_key):
-        max_log = max(self.matrix[hash_key])
-        for log in self.matrix[hash_key]:
-            log = math.exp(log - max_log)
-
-    def normalize_seq(self, hash_key):
-        total = 0
-        for z in self.matrix[hash_key]:
-            total += z
-        for z in self.matrix[hash_key]:
-            z /= total
+    def update_val(self, hash_key, val, offset):
+        self.matrix[hash_key][offset] = val
 
 
 def p0_gen(seqs, alphabet):

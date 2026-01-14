@@ -1,9 +1,24 @@
 import logging
 import math
 from . import tools
+from. tools import BasePWM as PWM
 
 
-def e_step(pwm: tools.PWM, rpm: tools.RPM, p0, seqs):
+class RPM(tools.BaseRPM):
+    def softmax(self, hash_key):
+        max_log = max(self.matrix[hash_key])
+        for log in self.matrix[hash_key]:
+            log = math.exp(log - max_log)
+
+    def normalize_seq(self, hash_key):
+        total = 0
+        for z in self.matrix[hash_key]:
+            total += z
+        for z in self.matrix[hash_key]:
+            z /= total
+
+
+def e_step(pwm: PWM, rpm: RPM, p0, seqs):
     for seq in seqs:
         hash_key = rpm.add_seq(seq)
         for offset in range(len(seq) - pwm.length + 1):
@@ -11,7 +26,7 @@ def e_step(pwm: tools.PWM, rpm: tools.RPM, p0, seqs):
             for j in range(len(snippet)):
                 nucl = snippet[j]
                 log_nucl = math.log(pwm.matrix[nucl][j]) - math.log(p0[nucl])
-            rpm.update_z(hash_key, log_nucl, offset)
+            rpm.update_val(hash_key, log_nucl, offset)
         rpm.softmax(hash_key)
         rpm.normalize_seq(hash_key)
 
