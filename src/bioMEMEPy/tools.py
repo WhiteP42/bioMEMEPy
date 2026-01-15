@@ -77,6 +77,9 @@ class BasePWM:
                 else:
                     self.matrix[nucl][i] = (1 - top_val) / len(self.alphabet - 1)
 
+    def update(self, value, nucl, pos):
+        self.matrix[nucl][pos] = value
+
     def normalize(self):
         for i in range(self.length):
             total = 0
