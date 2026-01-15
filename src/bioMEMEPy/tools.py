@@ -74,6 +74,19 @@ def gather(seqs, m_length, amount=0):
 def get_hash(seq):
     return hashlib.sha256(seq.encode()).hexdigest()[:16]
 
+# Compute log-likelihood:
+def log_like(rpm):
+    max_log = 0
+    total_z = 0
+    for log_vctr in rpm.log_matrix:
+        for log_val in log_vctr:
+            if log_val > max_log:
+                max_log = log_val
+    for log_vctr in rpm.log_matrix:
+        for log_val in log_vctr:
+            total_z += math.exp(log_val - max_log)
+    return max_log + math.log(total_z)
+
 
 # Class PWM
 class BasePWM:
@@ -110,14 +123,16 @@ class BasePWM:
 class BaseRPM:
     def __init__(self, m_length):
         self.m_length = m_length
-        self.matrix = dict()
+        self.resp_matrix = dict()
+        self.log_matrix = dict()
         self.hash_map = dict()
 
     def add_seq(self, seq):
         hash_key = get_hash(seq)
-        self.matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
+        self.resp_matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
+        self.log_matrix[hash_key] = [float(0)] * (len(seq) - self.m_length + 1)
         self.hash_map[hash_key] = seq
         return hash_key
 
-    def update(self, hash_key, val, offset):
-        self.matrix[hash_key][offset] = val
+    def update_log(self, hash_key, val, offset):
+        self.log_matrix[hash_key][offset] = val
