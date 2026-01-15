@@ -4,15 +4,18 @@ import hashlib
 import random
 
 
-def p0_gen(seqs, alphabet):
-    prop = dict()
-    total = 0
+# Total count of each nucleotide:
+def nucl_count(seqs, alphabet):
+    total = {nucl: 0 for nucl in alphabet}
     for nucl in alphabet:
-        prop[nucl] = 0
-    for seq in seqs:
-        for nucl in seq:
-            prop[nucl] += 1
-            total += 1
+        for seq in seqs:
+            total += seq.count(nucl)
+    return  total
+
+
+def p0_gen(seqs, alphabet):
+    prop = nucl_count(seqs, alphabet)
+    total = sum(prop)
     for nucl in prop:
         prop[nucl] /= total
     return prop
@@ -37,6 +40,14 @@ def snip(seq, length, s_pos):
     for pos in range(s_pos, f_pos):
         snippet.append(seq[pos])
     return ''.join(snippet)
+
+
+# How many possible snippets in a sequence
+def snip_count(seqs, m_length):
+    count = 0
+    for seq in seqs:
+        count += (len(seq) - m_length + 1)
+    return count
 
 
 # Seeding functions
@@ -97,8 +108,7 @@ class BasePWM:
 
 # Class RPM
 class BaseRPM:
-    def __init__(self, alphabet, m_length):
-        self.alphabet = alphabet
+    def __init__(self, m_length):
         self.m_length = m_length
         self.matrix = dict()
         self.hash_map = dict()
