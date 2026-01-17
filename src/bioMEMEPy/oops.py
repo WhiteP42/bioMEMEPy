@@ -48,7 +48,7 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
                         count += rpm.resp_matrix[hash_key][offset]
             pwm.update(count, trgt_nucl, pos)
     # All columns should sum 1.
-    pwm.normalize()
+    pwm.normalize() # TODO: ZeroDivisionError
 
     # Rebuild background probabilities.
     new_p0 = {nucl: 0 for nucl in pwm.alphabet}
@@ -67,6 +67,7 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
 
 
 def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
+    logger.debug('Called model OOPS.')
     # Get required k-mers to seed.
     logger.debug('Gathering seed candidates.')
     if tools.snip_count(seqs, m_length) >= 10000:
@@ -81,7 +82,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     for snip in seed_seqs:
         logger.debug(f'Testing {snip}.')
         p0 = tools.p0_gen(seqs, alphabet)
-        current_pwm = PWM(snip, alphabet, m_length, top_val) # TODO: TypeError
+        current_pwm = PWM(snip, alphabet, m_length, top_val)
         current_rpm = RPM(m_length)
         # Run 1 EM interation with the seed.
         e_step(current_pwm, current_rpm, seqs, p0)
@@ -89,7 +90,9 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
 
         # Compute total log-likelihood and compare with the previous best (or generate best).
         log_like = tools.log_like(current_rpm)
+        logger.debug(f'Log-like computed: {log_like}. Top candidate is {top_candidate[1]}.')
         if top_candidate is None or log_like > top_candidate[1]:
+            logger.debug('Replacing top candidate.')
             top_candidate = [snip, log_like]
 
     # Run EM to convergence with the selected seed and return PWM.

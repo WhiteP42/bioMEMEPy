@@ -104,7 +104,7 @@ class BasePWM:
                 if nucl == seq[i]:
                     self.matrix[nucl][i] = top_val
                 else:
-                    self.matrix[nucl][i] = (1 - top_val) / len(self.alphabet - 1)
+                    self.matrix[nucl][i] = (1 - top_val) / (len(self.alphabet) - 1)
 
     def update(self, value, nucl, pos):
         self.matrix[nucl][pos] = value
