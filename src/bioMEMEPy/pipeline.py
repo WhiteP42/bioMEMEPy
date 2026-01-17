@@ -16,8 +16,7 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, extract_val
         raise TypeError('Length of the motif must be int.')
 
     #Read FASTA
-    with open(fasta, 'r') as f:
-        seqs = extract(f)
+    seqs = extract(fasta)
 
     #Call mode
     _models = {'oops': oops} # ZOOPS and ANR models to be added here.

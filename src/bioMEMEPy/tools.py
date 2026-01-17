@@ -52,23 +52,23 @@ def snip_count(seqs, m_length):
 
 # Seeding functions
 def gather(seqs, m_length, amount=0):
-    ret_seqs = []
+    ret_snips = []
 
     if amount == 0:
         for seq in seqs:
-            for pos in range(len(seq) - m_length):
-                ret_seqs.append(snip(seq, m_length, pos))
+            for pos in range(len(seq) - m_length + 1):
+                ret_snips.append(snip(seq, m_length, pos))
 
     elif amount > 0:
-        for n_gather in range(amount):
-            seq = None
-            while seq not in ret_seqs:
-                seq = seqs[random.randint(0, len(seqs) - 1)]
-            ret_seqs.append(snip(seq, m_length, random.randint(0, len(seq) - m_length)))
+        while len(ret_snips) < amount:
+            seq = seqs[random.randint(0, len(seqs) - 1)]
+            snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length + 1))
+            if snippet not in ret_snips:
+                ret_snips.append(snippet)
 
     else:
         raise ValueError('Amount must be 0 or higher.')
-    return ret_seqs
+    return ret_snips
 
 # Get a hash
 def get_hash(seq):

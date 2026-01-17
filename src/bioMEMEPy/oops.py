@@ -3,6 +3,7 @@ import math
 from . import tools
 from .tools import BasePWM as PWM
 
+logger = logging.getLogger(__name__)
 
 class RPM(tools.BaseRPM):
     def softmax(self, hash_key):
@@ -66,10 +67,12 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
 
 def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     # Get required k-mers to seed.
+    logger.debug('Gathering seed candidates.')
     if tools.snip_count(seqs, m_length) >= 10000:
         seed_seqs = tools.gather(seqs, m_length, extract_val)
     else:
         seed_seqs = tools.gather(seqs, m_length)
+    logger.debug('Done!')
 
     # Seeding process:
     top_candidate = None
