@@ -62,6 +62,10 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
                 z_val[nucl] += rpm.resp_matrix[hash_key][offset]
     for nucl in pwm.alphabet:
         new_p0[nucl] = total[nucl] - z_val[nucl]
+    p0_total = sum(new_p0.values())
+    for nucl in pwm.alphabet:
+        new_p0[nucl] /= p0_total
+    logger.debug(new_p0)
     p0.clear()
     p0.update(new_p0)
 
@@ -111,6 +115,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
         e_step(pwm, rpm, seqs, p0)
         m_step(pwm, rpm, seqs, p0)
         log_like = tools.log_like(rpm)
+        logger.debug(f'Log-like is {log_like}.')
         if prev_loglike is None or (log_like - prev_loglike) > threshold:
             prev_loglike = log_like
         elif iterations >= max_iter or (log_like - prev_loglike) <= threshold:

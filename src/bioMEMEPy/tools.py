@@ -92,6 +92,17 @@ def log_like(rpm):
             total_z += math.exp(log_val - max_log)
     return max_log + math.log(total_z)
 
+#Obtain consensus from PWM:
+def consensus(pwm: dict, m_length, alphabet):
+    consens = []
+    for index in range(m_length):
+        best = None
+        for nucl in alphabet:
+            if best is None or pwm[nucl][index] > best[1]:
+                best = [nucl, pwm[nucl][index]]
+        consens.append(best[0])
+    return ''.join(consens)
+
 
 # Class PWM
 class BasePWM:
