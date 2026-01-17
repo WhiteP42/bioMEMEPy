@@ -84,11 +84,11 @@ def log_like(rpm):
     max_log = 0
     total_z = 0
     for log_vctr in rpm.log_matrix:
-        for log_val in log_vctr:
+        for log_val in rpm.log_matrix[log_vctr]:
             if log_val > max_log:
                 max_log = log_val
     for log_vctr in rpm.log_matrix:
-        for log_val in log_vctr:
+        for log_val in rpm.log_matrix[log_vctr]:
             total_z += math.exp(log_val - max_log)
     return max_log + math.log(total_z)
 

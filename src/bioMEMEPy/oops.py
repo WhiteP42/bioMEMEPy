@@ -21,7 +21,7 @@ def e_step(pwm: PWM, rpm: RPM, seqs, p0):
         # Add a sequence and generate a hash for it on RPM.
         hash_key = rpm.add_seq(seq)
         # For a particular sequence, for every possible motif-length snip:
-        for offset in range(tools.snip_count(seq, pwm.length)):
+        for offset in range(len(seq) - pwm.length + 1):
             snippet = tools.snip(seq, pwm.length, offset)
             log = 0
             # For every position on the snip, calculate and accumulate log probability against background frequency.
@@ -41,14 +41,14 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
             # Go through every sequence and every snippet:
             for seq in seqs:
                 hash_key = tools.get_hash(seq)
-                for offset in range(tools.snip_count(seq, pwm.length)):
+                for offset in range(len(seq) - pwm.length + 1):
                     snippet = tools.snip(seq, pwm.length, offset)
                     # If the nucleotide is the same as the target, add the responsibility value for that snippet.
                     if snippet[pos] == trgt_nucl:
                         count += rpm.resp_matrix[hash_key][offset]
             pwm.update(count, trgt_nucl, pos)
     # All columns should sum 1.
-    pwm.normalize() # TODO: ZeroDivisionError
+    pwm.normalize()
 
     # Rebuild background probabilities.
     new_p0 = {nucl: 0 for nucl in pwm.alphabet}
@@ -56,14 +56,14 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
     total = tools.nucl_count(seqs, pwm.alphabet)
     for seq in seqs:
         hash_key = tools.get_hash(seq)
-        for offset in range(tools.snip_count(seq, pwm.length)):
+        for offset in range(len(seq) - pwm.length + 1):
             snippet = tools.snip(seq, pwm.length, offset)
             for i, nucl in enumerate(snippet):
                 z_val[nucl] += rpm.resp_matrix[hash_key][offset]
     for nucl in pwm.alphabet:
         new_p0[nucl] = total[nucl] - z_val[nucl]
     p0.clear()
-    p0.update_log(new_p0)
+    p0.update(new_p0)
 
 
 def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
@@ -75,12 +75,13 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     else:
         seed_seqs = tools.gather(seqs, m_length)
     logger.debug('Done!')
+    logger.debug(f'Total seeds: {len(seed_seqs)}.')
 
     # Seeding process:
     top_candidate = None
-    logger.debug(f'Beginning seeding process. Top candidate is {top_candidate}.')
-    for snip in seed_seqs:
-        logger.debug(f'Testing {snip}.')
+    logger.debug(f'Beginning seeding process.')
+    for index, snip in enumerate(seed_seqs):
+        logger.debug(f'Testing {snip} ({index + 1}/{len(seed_seqs)}).')
         p0 = tools.p0_gen(seqs, alphabet)
         current_pwm = PWM(snip, alphabet, m_length, top_val)
         current_rpm = RPM(m_length)
@@ -90,12 +91,13 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
 
         # Compute total log-likelihood and compare with the previous best (or generate best).
         log_like = tools.log_like(current_rpm)
-        logger.debug(f'Log-like computed: {log_like}. Top candidate is {top_candidate[1]}.')
         if top_candidate is None or log_like > top_candidate[1]:
             logger.debug('Replacing top candidate.')
             top_candidate = [snip, log_like]
+        logger.debug(f'Log-like computed: {log_like}. Top candidate is {top_candidate[1]}.')
 
     # Run EM to convergence with the selected seed and return PWM.
+    logger.debug('Beginning EM...')
     seed = top_candidate[0]
     p0 = tools.p0_gen(seqs, alphabet)
     pwm = PWM(seed, alphabet, m_length, top_val)
@@ -105,6 +107,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     iterations = 0
     while not converged:
         iterations += 1
+        logger.debug(f'Iteration {iterations}.')
         e_step(pwm, rpm, seqs, p0)
         m_step(pwm, rpm, seqs, p0)
         log_like = tools.log_like(rpm)
