@@ -72,14 +72,16 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     if tools.snip_count(seqs, m_length) >= 10000:
         seed_seqs = tools.gather(seqs, m_length, extract_val)
     else:
-        seed_seqs = tools.gather(seqs, m_length) # TODO: WHY DOES IT CRASH HERE !?
+        seed_seqs = tools.gather(seqs, m_length)
     logger.debug('Done!')
 
     # Seeding process:
     top_candidate = None
-    for seq in seed_seqs:
+    logger.debug(f'Beginning seeding process. Top candidate is {top_candidate}.')
+    for snip in seed_seqs:
+        logger.debug(f'Testing {snip}.')
         p0 = tools.p0_gen(seqs, alphabet)
-        current_pwm = PWM(seq, alphabet, m_length, top_val)
+        current_pwm = PWM(snip, alphabet, m_length, top_val) # TODO: TypeError
         current_rpm = RPM(m_length)
         # Run 1 EM interation with the seed.
         e_step(current_pwm, current_rpm, seqs, p0)
@@ -88,7 +90,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
         # Compute total log-likelihood and compare with the previous best (or generate best).
         log_like = tools.log_like(current_rpm)
         if top_candidate is None or log_like > top_candidate[1]:
-            top_candidate = [seq, log_like]
+            top_candidate = [snip, log_like]
 
     # Run EM to convergence with the selected seed and return PWM.
     seed = top_candidate[0]

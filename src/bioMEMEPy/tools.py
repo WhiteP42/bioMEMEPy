@@ -8,17 +8,17 @@ logger = logging.getLogger(__name__)
 
 
 # Total count of each nucleotide:
-def nucl_count(seqs, alphabet):
+def nucl_count(seqs, alphabet) -> dict:
     total = {nucl: 0 for nucl in alphabet}
     for nucl in alphabet:
         for seq in seqs:
-            total += seq.count(nucl)
+            total[nucl] += seq.count(nucl)
     return  total
 
 
 def p0_gen(seqs, alphabet):
     prop = nucl_count(seqs, alphabet)
-    total = sum(prop)
+    total = sum(prop.values())
     for nucl in prop:
         prop[nucl] /= total
     return prop
