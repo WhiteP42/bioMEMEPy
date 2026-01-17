@@ -5,6 +5,7 @@ from .tools import BasePWM as PWM
 
 logger = logging.getLogger(__name__)
 
+
 class RPM(tools.BaseRPM):
     def softmax(self, hash_key):
         max_log = max(self.log_matrix[hash_key])
@@ -71,7 +72,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     if tools.snip_count(seqs, m_length) >= 10000:
         seed_seqs = tools.gather(seqs, m_length, extract_val)
     else:
-        seed_seqs = tools.gather(seqs, m_length)
+        seed_seqs = tools.gather(seqs, m_length) # TODO: WHY DOES IT CRASH HERE !?
     logger.debug('Done!')
 
     # Seeding process:

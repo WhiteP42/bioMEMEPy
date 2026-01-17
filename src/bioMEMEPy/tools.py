@@ -2,6 +2,9 @@ import math
 from itertools import islice
 import hashlib
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Total count of each nucleotide:
@@ -32,7 +35,7 @@ def extract(filepath):
 
 # Extract motif from sequence
 def snip(seq, length, s_pos):
-    if s_pos > len(seq) - s_pos + 1:
+    if s_pos > (len(seq) - length + 1):
         raise ValueError('Snippet overflows the provided sequence.')
 
     f_pos = s_pos + length
@@ -56,7 +59,9 @@ def gather(seqs, m_length, amount=0):
 
     if amount == 0:
         for seq in seqs:
+            logger.debug(f'Running sequence {seq}.')
             for pos in range(len(seq) - m_length + 1):
+                logger.debug(f'Position: {pos}/{len(seq) - m_length}')
                 ret_snips.append(snip(seq, m_length, pos))
 
     elif amount > 0:
