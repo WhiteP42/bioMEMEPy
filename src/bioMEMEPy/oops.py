@@ -70,7 +70,7 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
     p0.update(new_p0)
 
 
-def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
+def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_background, lazy):
     logger.debug('Called model OOPS.')
     # Get required k-mers to seed.
     logger.debug('Gathering seed candidates.')
@@ -89,9 +89,11 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
         p0 = tools.p0_gen(seqs, alphabet)
         current_pwm = PWM(snip, alphabet, m_length, top_val)
         current_rpm = RPM(m_length)
-        # Run 1 EM interation with the seed.
+        
+        # Lazy EM (only E-step for seed evaluation)
         e_step(current_pwm, current_rpm, seqs, p0)
-
+        
+        # TODO: Add full EM evaluation (or EME).
 
         # Compute total log-likelihood and compare with the previous best (or generate best).
         log_like = current_rpm.log_like
@@ -103,10 +105,14 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     # Run EM to convergence with the selected seed and return PWM.
     logger.debug('Beginning EM...')
     seed = top_candidate[0]
-    p0 = tools.p0_gen(seqs, alphabet)
-    pwm = PWM(seed, alphabet, m_length, top_val)
+    if d_background:
+        p0 = tools.p0_gen(seqs, alphabet)
+    else:
+        p0 = {nucl: 0.25 for nucl in alphabet}
+    pwm = PWM(seed, alphabet, m_length, top_val, p0)
     converged = False
     prev_loglike = None
+    print(max_iter)
     iterations = 0
     while not converged:
         iterations += 1
@@ -119,7 +125,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
         logger.debug(f'Log-like is {log_like}.')
         if prev_loglike is None or (log_like - prev_loglike) > threshold:
             prev_loglike = log_like
-        elif iterations >= max_iter or (log_like - prev_loglike) <= threshold:
+        if iterations >= max_iter or (log_like - prev_loglike) <= threshold:
             converged = True
 
     return pwm.matrix

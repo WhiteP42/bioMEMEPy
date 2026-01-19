@@ -7,7 +7,8 @@ from .tools import extract, consensus
 logger = logging.getLogger(__name__)
 
 
-def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, extract_val=2000, threshold=1e-5, max_iter=200):
+def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, extract_val=2000, threshold=1e-5, max_iter=200,
+         d_background = False, lazy = True):
     # Start time
     start_time = time.perf_counter()
 
@@ -21,7 +22,7 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, extract_val
     #Call mode
     _models = {'oops': oops} # ZOOPS and ANR models to be added here.
     try:
-        pwm = _models[model](seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter)
+        pwm = _models[model](seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_background, lazy)
     except KeyError:
         raise ValueError(f'Model {model} unsupported.')
 
