@@ -33,23 +33,18 @@ def e_step(pwm: PWM, rpm: RPM, seqs, p0):
 
 
 def m_step(pwm: PWM, rpm: RPM, seqs, p0):
-    # Update PWM with weighted counts.
-    # For each position in the motif:
     for pos in range(pwm.length):
-        # And for every nucleotide:
-        for trgt_nucl in pwm.alphabet:
-            count = 0
-            # Go through every sequence and every snippet:
-            for seq in seqs:
-                hash_key = tools.get_hash(seq)
-                for offset in range(len(seq) - pwm.length + 1):
-                    snippet = tools.snip(seq, pwm.length, offset)
-                    # If the nucleotide is the same as the target, add the responsibility value for that snippet.
-                    if snippet[pos] == trgt_nucl:
-                        count += rpm.resp_matrix[hash_key][offset]
-            pwm.update(count, trgt_nucl, pos)
-    # All columns should sum 1.
-    pwm.normalize()
+        col_count = {nucl: 0 for nucl in pwm.alphabet}
+        for seq in seqs:
+            hash_key = tools.get_hash(seq)
+            for offset in range(len(seq) - pwm.length + 1):
+                snippet = tools.snip(seq, pwm.length, offset)
+                col_count[snippet[pos]] += rpm.resp_matrix[hash_key][offset]
+        col_total = sum(col_count.values())
+        for nucl in pwm.alphabet:
+            col_val = col_count[nucl]
+            up_val = (col_val + pwm.beta * p0[nucl]) / (col_total + pwm.beta)
+            pwm.update(up_val, nucl, pos)
 
     # Rebuild background probabilities.
     new_p0 = {nucl: 0 for nucl in pwm.alphabet}
@@ -91,7 +86,10 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
         current_rpm = RPM(m_length)
         
         # Lazy EM (only E-step for seed evaluation)
-        e_step(current_pwm, current_rpm, seqs, p0)
+        if lazy:
+            e_step(current_pwm, current_rpm, seqs, p0)
+        else:
+            raise NotImplementedError('This evaluation mode is still in development!')
         
         # TODO: Add full EM evaluation (or EME).
 
@@ -109,7 +107,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
         p0 = tools.p0_gen(seqs, alphabet)
     else:
         p0 = {nucl: 0.25 for nucl in alphabet}
-    pwm = PWM(seed, alphabet, m_length, top_val, p0)
+    pwm = PWM(seed, alphabet, m_length, top_val)
     converged = False
     prev_loglike = None
     print(max_iter)
@@ -125,7 +123,9 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
         logger.debug(f'Log-like is {log_like}.')
         if prev_loglike is None or (log_like - prev_loglike) > threshold:
             prev_loglike = log_like
-        if iterations >= max_iter or (log_like - prev_loglike) <= threshold:
+        elif (log_like - prev_loglike) <= threshold:
+            converged = True
+        if iterations >= max_iter:
             converged = True
 
     return pwm.matrix

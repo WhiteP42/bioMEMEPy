@@ -94,7 +94,7 @@ def consensus(pwm: dict, m_length, alphabet):
 
 # Class PWM
 class BasePWM:
-    def __init__(self, seq: str, alphabet, m_length, top_val, p0):
+    def __init__(self, seq: str, alphabet, m_length, top_val):
         self.beta = 0.01
         self.alphabet = alphabet
         self.length = m_length
