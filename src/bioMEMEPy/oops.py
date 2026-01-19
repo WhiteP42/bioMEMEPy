@@ -86,12 +86,12 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
         current_rpm = RPM(m_length)
         
         # Lazy EM (only E-step for seed evaluation)
-        if lazy:
+        e_step(current_pwm, current_rpm, seqs, p0)
+        if not lazy:
+            m_step(current_pwm, current_rpm, seqs, p0)
+            current_rpm = RPM(m_length)
             e_step(current_pwm, current_rpm, seqs, p0)
-        else:
-            raise NotImplementedError('This evaluation mode is still in development!')
-        
-        # TODO: Add full EM evaluation (or EME).
+
 
         # Compute total log-likelihood and compare with the previous best (or generate best).
         log_like = current_rpm.log_like
@@ -110,7 +110,6 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
     pwm = PWM(seed, alphabet, m_length, top_val)
     converged = False
     prev_loglike = None
-    print(max_iter)
     iterations = 0
     while not converged:
         iterations += 1
