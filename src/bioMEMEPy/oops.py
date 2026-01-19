@@ -11,9 +11,10 @@ class RPM(tools.BaseRPM):
         max_log = max(self.log_matrix[hash_key])
         for index, log in enumerate(self.log_matrix[hash_key]):
             self.resp_matrix[hash_key][index] = math.exp(log - max_log)
-        total = sum(self.resp_matrix[hash_key])
-        for index, exp in enumerate(self.resp_matrix[hash_key]):
-            self.resp_matrix[hash_key][index] /= total
+        self.log_like += max_log + math.log(sum(self.resp_matrix[hash_key]))
+        shift_sum = sum(self.resp_matrix[hash_key])
+        for index, log in enumerate(self.resp_matrix[hash_key]):
+            self.resp_matrix[hash_key][index] /= shift_sum
 
 
 def e_step(pwm: PWM, rpm: RPM, seqs, p0):
@@ -65,7 +66,6 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
     p0_total = sum(new_p0.values())
     for nucl in pwm.alphabet:
         new_p0[nucl] /= p0_total
-    logger.debug(new_p0)
     p0.clear()
     p0.update(new_p0)
 
@@ -91,10 +91,10 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
         current_rpm = RPM(m_length)
         # Run 1 EM interation with the seed.
         e_step(current_pwm, current_rpm, seqs, p0)
-        m_step(current_pwm, current_rpm, seqs, p0)
+
 
         # Compute total log-likelihood and compare with the previous best (or generate best).
-        log_like = tools.log_like(current_rpm)
+        log_like = current_rpm.log_like
         if top_candidate is None or log_like > top_candidate[1]:
             logger.debug('Replacing top candidate.')
             top_candidate = [snip, log_like]
@@ -105,16 +105,17 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter):
     seed = top_candidate[0]
     p0 = tools.p0_gen(seqs, alphabet)
     pwm = PWM(seed, alphabet, m_length, top_val)
-    rpm = RPM(m_length)
     converged = False
     prev_loglike = None
     iterations = 0
     while not converged:
         iterations += 1
         logger.debug(f'Iteration {iterations}.')
+        # RPM has to be cleared every loop.
+        rpm = RPM(m_length)
         e_step(pwm, rpm, seqs, p0)
         m_step(pwm, rpm, seqs, p0)
-        log_like = tools.log_like(rpm)
+        log_like = rpm.log_like
         logger.debug(f'Log-like is {log_like}.')
         if prev_loglike is None or (log_like - prev_loglike) > threshold:
             prev_loglike = log_like

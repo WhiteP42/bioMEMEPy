@@ -75,22 +75,10 @@ def gather(seqs, m_length, amount=0):
         raise ValueError('Amount must be 0 or higher.')
     return ret_snips
 
-# Get a hash
+# Get a hash:
 def get_hash(seq):
     return hashlib.sha256(seq.encode()).hexdigest()[:16]
 
-# Compute log-likelihood:
-def log_like(rpm):
-    max_log = 0
-    total_z = 0
-    for log_vctr in rpm.log_matrix:
-        for log_val in rpm.log_matrix[log_vctr]:
-            if log_val > max_log:
-                max_log = log_val
-    for log_vctr in rpm.log_matrix:
-        for log_val in rpm.log_matrix[log_vctr]:
-            total_z += math.exp(log_val - max_log)
-    return max_log + math.log(total_z)
 
 #Obtain consensus from PWM:
 def consensus(pwm: dict, m_length, alphabet):
@@ -142,6 +130,7 @@ class BaseRPM:
         self.resp_matrix = dict()
         self.log_matrix = dict()
         self.hash_map = dict()
+        self.log_like = 0
 
     def add_seq(self, seq):
         hash_key = get_hash(seq)
