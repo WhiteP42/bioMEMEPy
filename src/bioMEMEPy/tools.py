@@ -35,7 +35,7 @@ def extract(filepath):
 
 # Extract motif from sequence
 def snip(seq, length, s_pos):
-    if s_pos > (len(seq) - length + 1):
+    if s_pos >= (len(seq) - length + 1):
         raise ValueError('Snippet overflows the provided sequence.')
 
     f_pos = s_pos + length
@@ -67,7 +67,7 @@ def gather(seqs, m_length, amount=0):
     elif amount > 0:
         while len(ret_snips) < amount:
             seq = seqs[random.randint(0, len(seqs) - 1)]
-            snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length + 1))
+            snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length))
             if snippet not in ret_snips:
                 ret_snips.append(snippet)
 
