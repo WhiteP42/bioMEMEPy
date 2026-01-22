@@ -58,6 +58,7 @@ def gather(seqs, m_length, amount=0):
     ret_snips = []
 
     if amount == 0:
+        logger.debug('Gathering all sequences...')
         for seq in seqs:
             logger.debug(f'Running sequence {seq}.')
             for pos in range(len(seq) - m_length + 1):
@@ -65,7 +66,9 @@ def gather(seqs, m_length, amount=0):
                 ret_snips.append(snip(seq, m_length, pos))
 
     elif amount > 0:
+        logger.debug(f'Gathering {amount} sequences...')
         while len(ret_snips) < amount:
+            logger.debug(f'{len(ret_snips)} saved.')
             seq = seqs[random.randint(0, len(seqs) - 1)]
             snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length))
             if snippet not in ret_snips:

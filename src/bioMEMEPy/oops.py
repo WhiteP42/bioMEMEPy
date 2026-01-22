@@ -65,12 +65,12 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
     p0.update(new_p0)
 
 
-def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_background, lazy):
+def oops(seqs, alphabet, m_length, top_val, seed_limit, threshold, max_iter, emp_background, lazy):
     logger.debug('Called model OOPS.')
     # Get required k-mers to seed.
     logger.debug('Gathering seed candidates.')
-    if tools.snip_count(seqs, m_length) >= 10000:
-        seed_seqs = tools.gather(seqs, m_length, extract_val)
+    if tools.snip_count(seqs, m_length) > seed_limit:
+        seed_seqs = tools.gather(seqs, m_length, seed_limit)
     else:
         seed_seqs = tools.gather(seqs, m_length)
     logger.debug('Done!')
@@ -81,7 +81,10 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
     logger.debug(f'Beginning seeding process.')
     for index, snip in enumerate(seed_seqs):
         logger.debug(f'Testing {snip} ({index + 1}/{len(seed_seqs)}).')
-        p0 = tools.p0_gen(seqs, alphabet)
+        if emp_background:
+            p0 = tools.p0_gen(seqs, alphabet)
+        else:
+            p0 = {nucl: 0.25 for nucl in alphabet}
         current_pwm = PWM(snip, alphabet, m_length, top_val)
         current_rpm = RPM(m_length)
         
@@ -103,7 +106,7 @@ def oops(seqs, alphabet, m_length, top_val, extract_val, threshold, max_iter, d_
     # Run EM to convergence with the selected seed and return PWM.
     logger.debug('Beginning EM...')
     seed = top_candidate[0]
-    if d_background:
+    if emp_background:
         p0 = tools.p0_gen(seqs, alphabet)
     else:
         p0 = {nucl: 0.25 for nucl in alphabet}
