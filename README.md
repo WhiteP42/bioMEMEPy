@@ -16,8 +16,8 @@
     - Numpy implementation to accelerate calculations.
     - Eliminating excessive looping.
     - Possibly moving calculations to GPU with JAX.
-- ZOOPS mode: *Planned*
-- ANR mode: *Planned*
+- ZOOPS mode: *In development, check zoops branch.*
+- ANR mode: *Planned.*
 
 ## How to use bioMEMEPy:
 
