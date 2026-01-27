@@ -41,9 +41,10 @@ You also have, if required, a nucleotide or aminoacid list, which you can access
 There are also optional parameters, with default values assigned to, you can configure if you wish:<br>
 `motif_num=1`: *Not implemented yet.* This parameter will allow you to set the number of motifs MEME should find.<br>
 `top_val=0.5`: Sets the value that the present nucleotide in a newly generated PWM will have per position.<br>
-`seed_limit=5000`: Sets the number of motifs that will be evaluated during the seeding process. Increase for rare motif,
-decrease for better performance. **Never decrease below 1000!** ***Warning! DO NOT SET TOO CLOSE TO THE ACTUAL NUMBER OF
-TOTAL MOTIFS YOUR DATASET MAY HAVE AS IT WILL SLOW THE CODE DOWN BY A LOT!***<br>
+`seed_thresh=5000`: Sets the number of motifs that will be evaluated during the seeding process. Increase for rare motif,
+decrease for better performance.<br>
+`seed_num=2000`: Number of seeds to be selected, randomly, from the data. **Do not set too close to the seed limit or
+the code will slow down significantly or crash!**<br>
 `threshold=1e-5`: Value which sets convergence requirements for the EM algorithm.<br>
 `max_iter=200`: Maximum number of EM iterations.<br>
 `emp_background=False`: This mode permits the generation of dynamic starting bacground proportions, which counts all

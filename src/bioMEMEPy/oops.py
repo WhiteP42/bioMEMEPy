@@ -65,12 +65,12 @@ def m_step(pwm: PWM, rpm: RPM, seqs, p0):
     p0.update(new_p0)
 
 
-def oops(seqs, alphabet, m_length, top_val, seed_limit, threshold, max_iter, emp_background, lazy):
+def oops(seqs, alphabet, m_length, top_val, seed_thresh, seed_num, threshold, max_iter, emp_background, lazy):
     logger.debug('Called model OOPS.')
     # Get required k-mers to seed.
     logger.debug('Gathering seed candidates.')
-    if tools.snip_count(seqs, m_length) > seed_limit:
-        seed_seqs = tools.gather(seqs, m_length, seed_limit)
+    if tools.snip_count(seqs, m_length) > seed_thresh:
+        seed_seqs = tools.gather(seqs, m_length, seed_num)
     else:
         seed_seqs = tools.gather(seqs, m_length)
     logger.debug('Done!')
