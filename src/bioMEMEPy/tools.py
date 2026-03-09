@@ -97,8 +97,9 @@ def consensus(pwm: dict, m_length, alphabet):
 
 # Class PWM
 class BasePWM:
-    def __init__(self, seq, alphabet, m_length, top_val):
+    def __init__(self, seq, alphabet, m_length, top_val, gamma=0.5):
         self.beta = 0.01
+        self.gamma = gamma
         self.alphabet = alphabet
         self.length = m_length
         self.matrix = {nucl: [float(0)] * self.length for nucl in alphabet}
