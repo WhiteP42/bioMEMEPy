@@ -29,7 +29,9 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=
 
     #Gather seeding candidates (universal):
     logger.debug('Gathering seed candidates.')
-    if tools.snip_count(seqs, m_length) > seed_limit:
+    snip_c = tools.snip_count(seqs, m_length)
+    logger.debug(f'Total strings is {snip_c}.')
+    if snip_c > seed_limit:
         seed_seqs = tools.gather(seqs, m_length, seed_limit)
     else:
         seed_seqs = tools.gather(seqs, m_length)
