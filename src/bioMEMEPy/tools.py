@@ -1,4 +1,5 @@
 import math
+import time
 from itertools import islice
 import hashlib
 import random
@@ -67,7 +68,8 @@ def gather(seqs, m_length, amount=0):
 
     elif amount > 0:
         logger.debug(f'Gathering {amount} sequences...')
-        while len(ret_snips) < amount:
+        timer = time.time()
+        while len(ret_snips) < amount and (time.time() - timer) < 5:
             logger.debug(f'{len(ret_snips)} saved.')
             seq = seqs[random.randint(0, len(seqs) - 1)]
             snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length))
@@ -97,8 +99,9 @@ def consensus(pwm: dict, m_length, alphabet):
 
 # Class PWM
 class BasePWM:
-    def __init__(self, seq: str, alphabet, m_length, top_val):
+    def __init__(self, seq, alphabet, m_length, top_val, gamma=0.5):
         self.beta = 0.01
+        self.gamma = gamma
         self.alphabet = alphabet
         self.length = m_length
         self.matrix = {nucl: [float(0)] * self.length for nucl in alphabet}
