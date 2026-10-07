@@ -53,7 +53,7 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=
         # Seed according to seeding mode:
         model.e_step(pwm, rpm, seqs, p0)
         if lazy:
-            raise NotImplementedError # Later implementation
+            raise NotImplementedError # Later implementation, do a regular E-step only and select 50 top, then do EME.
         else:
             model.m_step(pwm, rpm, seqs, p0)
             rpm = model.RPM(m_length)

@@ -54,28 +54,35 @@ def snip_count(seqs, m_length):
     return count
 
 
-# Seeding functions
+# Seeding functions #TODO: TEST
 def gather(seqs, m_length, amount=0):
+    logger.debug('Building k-mers...')
     ret_snips = []
 
-    if amount == 0:
-        logger.debug('Gathering all sequences...')
+    if amount >= 0:
         for seq in seqs:
             logger.debug(f'Running sequence {seq}.')
             for pos in range(len(seq) - m_length + 1):
                 logger.debug(f'Position: {pos}/{len(seq) - m_length}')
                 ret_snips.append(snip(seq, m_length, pos))
 
-    elif amount > 0:
-        logger.debug(f'Gathering {amount} sequences...')
-        timer = time.time()
-        while len(ret_snips) < amount and (time.time() - timer) < 5:
-            logger.debug(f'{len(ret_snips)} saved.')
-            seq = seqs[random.randint(0, len(seqs) - 1)]
-            snippet = snip(seq, m_length, random.randint(0, len(seq) - m_length))
-            if snippet not in ret_snips:
-                ret_snips.append(snippet)
+        if amount == 0:
+                logger.debug('Gathering all sequences...')
 
+        elif amount > 0:
+            logger.debug(f'Gathering {amount} sequences...')
+            pool = []
+            complete = False
+            while not complete:
+                r_val = random.randint(0, len(ret_snips) - 1)
+                selected = ret_snips[r_val]
+                pool.append(selected)
+                del ret_snips[r_val]
+                logger.debug(f'{len(pool)}/{amount} selected k-mers.')
+                if len(pool) >= amount:
+                    logger.debug('Selection complete.')
+                    ret_snips = pool
+                    complete = True
     else:
         raise ValueError('Amount must be 0 or higher.')
     return ret_snips

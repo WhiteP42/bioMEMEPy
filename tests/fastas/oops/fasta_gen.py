@@ -3,10 +3,11 @@ Currently OOPS generation only, for testing purposes
 """
 import random
 
-motif = 'ATAACGTATTACGGCG'
+motif = 'ATAACGTATTACGGCGGCAT'
 alphabet = ['A', 'T', 'C', 'G']
-seq_len = 120
-n_seq = 50
+seq_len = 500
+n_seq = 3000
+break_range = (3, 10)
 
 for seq in range(n_seq):
     input_seq = []
@@ -18,6 +19,6 @@ for seq in range(n_seq):
     for pos in range(sec_start):
         input_seq.append(random.choice(alphabet))
     input_seq = ''.join(input_seq)
-    with open('out.fasta', 'a') as f:
+    with open('oopstest.fasta', 'a') as f:
         f.write(f'>seq{seq}: m_pos = {motif_inj}, motif = {motif}\n'
                 f'{input_seq}\n')
