@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# Total count of each nucleotide:
+# Total count of each nucleotide
 def nucl_count(seqs, alphabet) -> dict:
     total = {nucl: 0 for nucl in alphabet}
     for nucl in alphabet:

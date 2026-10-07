@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=5000, threshold=1e-5, max_iter=200,
          emp_background=False, lazy=False):
+
+    logger.info(f'Running {model} looking for a {m_length}-mer motif.')
+
     start_time = time.perf_counter()
     if not isinstance(m_length, int):
         raise TypeError('Length of the motif must be int.')
@@ -23,12 +26,13 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=
 
     #Validate model call:
     if model not in _models:
+        logger.error('Incorrect model selected.')
         raise ValueError(f'Model {model} not supported.')
     else:
         model = _models[model]
 
     #Gather seeding candidates (universal):
-    logger.debug('Gathering seed candidates.')
+    logger.info('Gathering seed candidates.')
     snip_c = tools.snip_count(seqs, m_length)
     logger.debug(f'Total strings is {snip_c}.')
     if snip_c > seed_limit:
@@ -40,7 +44,7 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=
 
     #Seeding process:
     top_candidate = None
-    logger.debug(f'Beginning seeding process.')
+    logger.info(f'Beginning seeding process.')
     for index, snip in enumerate(seed_seqs):
         logger.debug(f'Testing {snip} ({index + 1}/{len(seed_seqs)}).')
         if emp_background:
@@ -94,8 +98,11 @@ def meme(fasta, alphabet, model, m_length, motif_num=1, top_val=0.5, seed_limit=
     # Generate consensus from PWM:
     consens = tools.consensus(pwm.matrix, m_length, alphabet)
 
+    # Report total time in mins and sec.
     total_time = time.perf_counter() - start_time
-    logger.info(f'Runtime: %.3f s.', total_time)
+    total_min = total_time//60
+    total_sec = total_time - total_min*60
+    logger.info(f'Runtime: {total_min} min {total_sec:.3f} sec.')
 
-    #Return PWM
+    #Return PWM and consensus motif
     return pwm.matrix, consens
