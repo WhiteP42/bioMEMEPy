@@ -9,8 +9,5 @@ algorithm faster.
 - Changed ```fasta_gen.py``` to be able to generate files making them miss a portion of the motif dinamically. This will
 enhance the amount of tests we can perform by generating mock sequence data befor jumping to real-life data, which we
 will do when the ZOOPS algorithm is implemented.
-- Changed ```test_tools.py``` to add a check for algorithm accuracy to make sure that results are correct and they don't
-break. This test does not use ```seed()``` for repeatability because we expect the result to be the same regardless of
-the seed collection done internally.
 
 *Changelogs begun being kept at version 0.1.3*

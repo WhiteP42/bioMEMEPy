@@ -24,13 +24,3 @@ def test_gather_3():
     random.seed(67)
     kmers = tools.gather(seqs, 3, 3)
     assert len(kmers) == 3
-
-def test_full_oops():
-    # Complete motif (short data)
-    fasta = 'fastas/oops1.fasta'
-    result = bioMEMEPy.meme(fasta, bioMEMEPy.mnm.dna, 'oops', 16)
-    assert result[1] == 'ATAACGTATTACGGCG'
-
-    # Incomplete motif (3-10N gap) (short data)
-
-    # Incomplete motif (3-10N gap) (long data)

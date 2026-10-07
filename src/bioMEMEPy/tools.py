@@ -54,7 +54,7 @@ def snip_count(seqs, m_length):
     return count
 
 
-# Seeding functions #TODO: TEST
+# Seeding functions
 def gather(seqs, m_length, amount=0):
     logger.debug('Building k-mers...')
     ret_snips = []
